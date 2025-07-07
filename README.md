@@ -1,18 +1,17 @@
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=gradient&text=JWT_django&section=header&reversal=false&textBg=false&fontSize=70&fontAlign=50&animation=fadeIn&fontAlignY=38&descSize=0"></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=gradient&text=Backend Videoflix&section=header&reversal=false&textBg=false&fontSize=70&fontAlign=50&animation=fadeIn&fontAlignY=38&descSize=0"></p>
 
 <p>
   <img alt="Version" src="https://img.shields.io/badge/Framework-Django-lightgreen?logo=django" />
-  <a href="https://github.com/ToniKleinfeld/JWT_django?tab=MIT-1-ov-file">
+  <a href="https://github.com/ToniKleinfeld/Videoflix?tab=MIT-1-ov-file">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
   </a>
 </p>
 
-> Make a Default Django project for fast setup new Project with implementet JWT user
+> A Django / DRF based backend for a Video platform
 
 ## Dependencies
 
 Used : `Python version 3.13.2`
-
 
 ## Installation
 
@@ -39,21 +38,11 @@ pip install -r requirements.txt
 ```
 
 > [!IMPORTANT]
-> create your .env file and fill your data <br>
-> If python not work try python3
+> create your .env file and fill your data
 
 ```sh
 cp .env.example .env
 ```
-
-> [!NOTE]
-> Or create your env file with a random generated key and default settings
-
-```sh
-python setup_env.py
-```
-
-Maybe you need to restart your coding programm.
 
 ## How to use
 
@@ -65,6 +54,9 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 ```
+
+> [!NOTE]
+> If python not work, try python3
 
 ## More Infos
 
