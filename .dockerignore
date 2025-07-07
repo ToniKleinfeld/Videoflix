@@ -1,0 +1,27 @@
+.git/
+.vscode/
+venv/
+env/
+
+
+generated_env_example.py
+TODO.md
+README.md
+.gitignore
+__pycache__
+*.pyc
+.env
+node_modules
+black.ini
+flake8.ini
+docker-compose.yml
+Dockerfile
+
+#Build Docker image
+#docker build -t coderr .
+
+#Start the container in bash 
+#docker run --publish 8000:8000 coderr 
+
+#start the container with docker-compose
+#docker-compose -f docker-compose.dev.yml up  
