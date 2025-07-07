@@ -2,9 +2,6 @@
 
 <p>
   <img alt="Version" src="https://img.shields.io/badge/Framework-Django-lightgreen?logo=django" />
-  <a href="https://github.com/ToniKleinfeld/Videoflix?tab=MIT-1-ov-file">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  </a>
 </p>
 
 > A Django / DRF based backend for a Video platform
