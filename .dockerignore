@@ -17,11 +17,33 @@ flake8.ini
 docker-compose.yml
 Dockerfile
 
-#Build Docker image
-#docker build -t coderr .
-
-#Start the container in bash 
-#docker run --publish 8000:8000 coderr 
-
-#start the container with docker-compose
-#docker-compose -f docker-compose.dev.yml up  
+*.pyc
+*.pyo
+*.mo
+*.db
+*.css.map
+*.egg-info
+*.sql.gz
+.cache
+.project
+.idea
+.pydevproject
+.idea/workspace.xml
+.DS_Store
+.git/
+.sass-cache
+.vagrant/
+__pycache__
+dist
+docs
+env
+venv
+logs
+src/{{ project_name }}/settings/local.py
+src/node_modules
+web/media
+web/static/CACHE
+stats
+Dockerfile
+.env
+db.sqlite3
