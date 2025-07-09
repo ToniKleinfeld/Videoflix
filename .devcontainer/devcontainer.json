@@ -12,7 +12,9 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "batisteo.vscode-django",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "ms-python.black-formatter",
+        "ms-python.flake8"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
