@@ -1,0 +1,20 @@
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: .devcontainer/backend.dev.Dockerfile
+    image: videoflix-dev-web 
+    env_file: .env
+    container_name: videoflix_dev_backend
+    command: /bin/sh /app/backend.entrypoint.sh
+    
+    volumes:
+      - .:/app
+      - videoflix_media:/app/media
+      - videoflix_static:/app/static
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
