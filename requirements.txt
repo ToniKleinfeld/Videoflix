@@ -10,7 +10,9 @@ django-redis==6.0.0
 django-rq==3.0.1
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
+ffmpeg-python==0.2.0
 flake8==7.3.0
+future==1.0.0
 gunicorn==23.0.0
 mccabe==0.7.0
 mypy_extensions==1.1.0
