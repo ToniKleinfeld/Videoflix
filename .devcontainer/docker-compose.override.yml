@@ -4,11 +4,11 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/backend.dev.Dockerfile
-    image: videoflix-dev-web 
+    image: videoflix-dev-web
     env_file: .env
     container_name: videoflix_dev_backend
-    command: /bin/sh /app/backend.entrypoint.sh
-    
+    command: /bin/sh /app/backend.entrypoint.dev.sh
+
     volumes:
       - .:/app
       - videoflix_media:/app/media
