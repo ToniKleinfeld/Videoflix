@@ -1,23 +1,34 @@
 from django.contrib import admin
-from .models import Video
 from django.utils.html import format_html
+
+from .models import Video
+import django_rq
 
 
 @admin.register(Video)
 class VideoAdminAdvanced(admin.ModelAdmin):
-    list_display = ["title", "category", "create_at", "video_preview", "thumbnail_preview", "file_size"]
+    list_display = [
+        "title",
+        "id",
+        "category",
+        "create_at",
+        "video_preview",
+        "file_size",
+        "thumbnail_status",
+    ]
     list_filter = ["category", "create_at"]
     search_fields = ["title", "description"]
     ordering = ["-create_at"]
-    readonly_fields = ["video_preview", "thumbnail_preview", "file_info"]
+    readonly_fields = ["video_preview", "thumbnail_preview", "file_info", "processing_info"]
 
     fieldsets = (
-        ("Grunddaten", {"fields": ("title", "description", "category")}),
+        ("Basic data", {"fields": ("title", "description", "category")}),
         (
-            "Medien",
+            "Media",
             {"fields": ("video_file", "video_preview", "thumbnail_url", "thumbnail_preview"), "classes": ("wide",)},
         ),
-        ("Metadaten", {"fields": ("create_at", "file_info"), "classes": ("collapse",)}),
+        ("Processing", {"fields": ("processing_info",), "classes": ("collapse",)}),
+        ("Metadata", {"fields": ("create_at", "file_info"), "classes": ("collapse",)}),
     )
 
     def video_preview(self, obj):
@@ -25,14 +36,18 @@ class VideoAdminAdvanced(admin.ModelAdmin):
             return format_html(
                 '<video width="200" controls><source src="{}" type="video/mp4"></video>', obj.video_file.url
             )
-        return "Kein Video vorhanden"
+        return "No video available"
 
-    video_preview.short_description = "Video Vorschau"
+    video_preview.short_description = "Video preview"
 
     def thumbnail_preview(self, obj):
         if obj.thumbnail_url:
             return format_html('<img src="{}" width="100" height="60" style="object-fit: cover;" />', obj.thumbnail_url)
-        return "Kein Thumbnail"
+        elif obj.video_file:
+            return format_html(
+                '<div style="width:100px;height:60px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#666;font-size:10px;">Wird generiert...</div>'
+            )
+        return "No Thumbnail"
 
     thumbnail_preview.short_description = "Thumbnail"
 
@@ -47,16 +62,37 @@ class VideoAdminAdvanced(admin.ModelAdmin):
                 return f"{size / 1024:.1f} KB"
         return "N/A"
 
-    file_size.short_description = "Dateigröße"
+    file_size.short_description = "Filesize"
+
+    def thumbnail_status(self, obj):
+        if obj.video_file and obj.thumbnail_url:
+            return format_html('<span style="color: green;">✓</span>')
+        elif obj.video_file:
+            return format_html('<span style="color: orange;">⏳</span>')
+        return format_html('<span style="color: red;">✗</span>')
+
+    thumbnail_status.short_description = "Thumbnail Status"
 
     def file_info(self, obj):
         if obj.video_file:
             return format_html(
-                "<strong>Dateiname:</strong> {}<br>" "<strong>Pfad:</strong> {}<br>" "<strong>Größe:</strong> {}",
+                "<strong>Filename:</strong> {}<br>" "<strong>Path:</strong> {}<br>" "<strong>Size:</strong> {}",
                 obj.video_file.name.split("/")[-1],
                 obj.video_file.name,
                 self.file_size(obj),
             )
-        return "Keine Datei vorhanden"
+        return "No file available"
 
-    file_info.short_description = "Datei-Informationen"
+    file_info.short_description = "File-information"
+
+    def processing_info(self, obj):
+        queue = django_rq.get_queue("default")
+        job_count = len(queue.jobs)
+
+        return format_html(
+            "<strong>Queue status:</strong> {} Jobs in the queue<br>" "<strong>Thumbnail status:</strong> {}",
+            job_count,
+            "Available" if obj.thumbnail_url else "Not generated",
+        )
+
+    processing_info.short_description = "Processing status"
