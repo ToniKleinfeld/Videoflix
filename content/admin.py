@@ -12,7 +12,6 @@ class VideoAdminAdvanced(admin.ModelAdmin):
         "id",
         "category",
         "create_at",
-        "video_preview",
         "file_size",
         "thumbnail_status",
     ]

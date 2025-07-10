@@ -36,13 +36,13 @@ def generate_video_thumbnail(video_id):
         try:
             (
                 ffmpeg.input(temp_video_path, ss=5)
-                .filter("scale", 320, -1)
+                .filter("scale", 640, -1)
                 .output(temp_thumb_path, vframes=1, **{"q:v": 2})
                 .overwrite_output()
                 .run(quiet=True)
             )
 
-            thumbnail_filename = f"thumbnails/{video.id}_{video.title[:20]}.jpg"
+            thumbnail_filename = f"thumbnails/image{video.id}.jpg"
 
             with open(temp_thumb_path, "rb") as thumb_file:
                 saved_path = default_storage.save(thumbnail_filename, ContentFile(thumb_file.read()))
@@ -51,7 +51,7 @@ def generate_video_thumbnail(video_id):
                 video.thumbnail_url = thumbnail_url
                 video.save(update_fields=["thumbnail_url"])
 
-                logger.info(f"Thumbnail for video {video.id} successfully generated: {thumbnail_url}")
+                logger.info(f"Thumbnail for video {video.title} successfully generated: {thumbnail_url}")
 
         except Exception as e:
             logger.error(f"Error: {str(e)}")

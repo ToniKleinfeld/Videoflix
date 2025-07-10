@@ -18,7 +18,7 @@ def video_post_save(sender, instance, created, **kwargs):
     Signal is triggered after a video has been saved
     """
     if created and instance.video_file:
-        logger.info(f"New Video {instance.id} uploaded, start thumbnail generation")
+        logger.info(f"New Video {instance.title} uploaded, start thumbnail generation")
 
         transaction.on_commit(lambda: django_rq.enqueue(generate_video_thumbnail, instance.id))
 
@@ -48,28 +48,3 @@ def video_post_delete(sender, instance, **kwargs):
             logger.info(f"Thumbnail for {instance.id} deleted")
         except Exception as e:
             logger.error(f"Error when deleting the thumbnail for{instance.id}: {str(e)}")
-
-
-# @receiver(post_save, sender=Video)
-# def video_post_save(sender, instance, created, **kwargs):
-#     print("Video saved")
-#     if created:
-#         print("New video created")
-#         queue = django_rq.get_queue("default", autocommit=True)
-#         queue.enqueue(convert_480p, instance.video_file.path)
-
-
-# @receiver(post_delete, sender=Video)
-# def auto_delte_file_on_delte(sender, instance, **kwargs):
-#     """
-#     Delte file from filesystem
-#     when corresponding 'Video' object is delted.
-#     """
-
-#     if instance.video_file:
-#         if os.path.isfile(instance.video_file.path):
-#             os.remove(instance.video_file.path)
-#             print("Video ${video_file} is removed")
-
-
-# TODO: später auch die konvertierten videos! nicht vergessen
