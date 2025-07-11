@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Video
+from .models import Video, VideoQuality
 import django_rq
 
 
@@ -95,3 +95,18 @@ class VideoAdminAdvanced(admin.ModelAdmin):
         )
 
     processing_info.short_description = "Processing status"
+
+
+class VideoQualityAdmin(admin.ModelAdmin):
+    list_display = ("video_title", "resolution", "bitrate", "processing_status")
+    list_filter = ("processing_status", "resolution", "video__title")
+    search_fields = ("video__title",)
+
+    def video_title(self, obj):
+        return obj.video.title
+
+    video_title.short_description = "Video Title"
+    video_title.admin_order_field = "video__title"
+
+
+admin.site.register(VideoQuality, VideoQualityAdmin)
