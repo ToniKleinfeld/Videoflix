@@ -8,6 +8,7 @@ import django_rq
 from .models import Video
 from content.tasks import generate_video_thumbnail
 import logging
+from urllib.parse import unquote
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,8 @@ def video_post_delete(sender, instance, **kwargs):
         try:
             thumbnail_path = instance.thumbnail_url.split("/")[-2:]
             thumbnail_path = "/".join(thumbnail_path)
+            thumbnail_path = unquote(thumbnail_path)
             default_storage.delete(thumbnail_path)
-            logger.info(f"Thumbnail for {instance.title} deleted")
+            logger.info(f"Thumbnail {instance.title + str(instance.id)} deleted")
         except Exception as e:
             logger.error(f"Error when deleting the thumbnail for{instance.id}: {str(e)}")

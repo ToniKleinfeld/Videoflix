@@ -42,7 +42,7 @@ def generate_video_thumbnail(video_id):
                 .run(quiet=True)
             )
 
-            thumbnail_filename = f"thumbnails/image{video.id}.jpg"
+            thumbnail_filename = f"thumbnails/{video.title + str(video.id)}.jpg"
 
             with open(temp_thumb_path, "rb") as thumb_file:
                 saved_path = default_storage.save(thumbnail_filename, ContentFile(thumb_file.read()))
