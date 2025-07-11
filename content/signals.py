@@ -67,7 +67,7 @@ def video_post_delete(sender, instance, **kwargs):
         except Exception as e:
             logger.error(f"Error when deleting the thumbnail for{instance}: {str(e)}")
 
-    cleanup_hls_files(instance.id)
+    cleanup_hls_files(instance)
 
 
 def cleanup_hls_files(video):

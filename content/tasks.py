@@ -115,31 +115,33 @@ def process_video_task(video_id):
                     vcodec="libx264",
                     acodec="aac",
                     vf=f'scale=-2:{config["height"]}',
-                    b_v=config["bitrate"],
-                    b_a="128k",
                     hls_time=10,
                     hls_playlist_type="vod",
                     hls_segment_filename=segment_pattern,
                     f="hls",
+                    **{
+                        "b:v": config["bitrate"],
+                        "b:a": "128k",
+                    },
                 )
 
                 ffmpeg.run(stream, overwrite_output=True, quiet=True)
 
                 quality.hls_playlist_path = f"hls/{video.id}/{resolution}/index.m3u8"
-                quality.processing_status = 'completed'
+                quality.processing_status = "completed"
                 quality.save()
 
-                bandwidth = int(config['bitrate'].replace('k', '')) * 1000
+                bandwidth = int(config["bitrate"].replace("k", "")) * 1000
                 master_playlist_content += f"#EXT-X-STREAM-INF:BANDWIDTH={bandwidth},RESOLUTION={get_resolution_width(config['height'])}x{config['height']}\n"
                 master_playlist_content += f"/api/video/{video.id}/{resolution}/index.m3u8\n\n"
 
-            except Exception as e:
+            except ffmpeg.Error as e:
                 quality.processing_status = "failed"
                 quality.save()
-                logger.error(f"Error at {resolution}: {e}")
+                logger.error(f"Error at {resolution}: stderr:\n{e.stderr.decode()}")
 
-        master_playlist_path = os.path.join(base_output_dir, 'master.m3u8')
-        with open(master_playlist_path, 'w') as f:
+        master_playlist_path = os.path.join(base_output_dir, "master.m3u8")
+        with open(master_playlist_path, "w") as f:
             f.write(master_playlist_content)
 
         video.processing_status = "completed"
