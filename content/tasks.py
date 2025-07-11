@@ -2,12 +2,13 @@ import os
 from django_rq import job
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.conf import settings
 
 import ffmpeg
 import tempfile
 import logging
 
-from .models import Video
+from .models import Video, VideoQuality
 
 logger = logging.getLogger(__name__)
 
@@ -68,3 +69,89 @@ def generate_video_thumbnail(video_id):
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         return False
+
+
+@job("default", timeout=3600)
+def process_video_task(video_id):
+    """
+    Generating different resolutions in hls format
+    """
+    try:
+        video = Video.objects.get(id=video_id)
+        video.processing_status = "processing"
+        video.save()
+
+        resolutions = {
+            "120p": {"height": 120, "bitrate": "200k"},
+            "360p": {"height": 360, "bitrate": "800k"},
+            "720p": {"height": 720, "bitrate": "2500k"},
+            "1080p": {"height": 1080, "bitrate": "5000k"},
+        }
+
+        input_path = video.video_file.path
+        base_output_dir = os.path.join(settings.MEDIA_ROOT, "hls", str(video.id))
+        os.makedirs(base_output_dir, exist_ok=True)
+
+        master_playlist_content = "#EXTM3U\n#EXT-X-VERSION:3\n\n"
+
+        for resolution, config in resolutions.items():
+            quality, created = VideoQuality.objects.get_or_create(
+                video=video, resolution=resolution, defaults={"bitrate": int(config["bitrate"].replace("k", ""))}
+            )
+            quality.processing_status = "processing"
+            quality.save()
+
+            try:
+                resolution_dir = os.path.join(base_output_dir, resolution)
+                os.makedirs(resolution_dir, exist_ok=True)
+
+                playlist_path = os.path.join(resolution_dir, "index.m3u8")
+                segment_pattern = os.path.join(resolution_dir, "segment_%03d.ts")
+
+                stream = ffmpeg.input(input_path)
+                stream = ffmpeg.output(
+                    stream,
+                    playlist_path,
+                    vcodec="libx264",
+                    acodec="aac",
+                    vf=f'scale=-2:{config["height"]}',
+                    b_v=config["bitrate"],
+                    b_a="128k",
+                    hls_time=10,
+                    hls_playlist_type="vod",
+                    hls_segment_filename=segment_pattern,
+                    f="hls",
+                )
+
+                ffmpeg.run(stream, overwrite_output=True, quiet=True)
+
+                quality.hls_playlist_path = f"hls/{video.id}/{resolution}/index.m3u8"
+                quality.processing_status = 'completed'
+                quality.save()
+
+                bandwidth = int(config['bitrate'].replace('k', '')) * 1000
+                master_playlist_content += f"#EXT-X-STREAM-INF:BANDWIDTH={bandwidth},RESOLUTION={get_resolution_width(config['height'])}x{config['height']}\n"
+                master_playlist_content += f"/api/video/{video.id}/{resolution}/index.m3u8\n\n"
+
+            except Exception as e:
+                quality.processing_status = "failed"
+                quality.save()
+                logger.error(f"Error at {resolution}: {e}")
+
+        master_playlist_path = os.path.join(base_output_dir, 'master.m3u8')
+        with open(master_playlist_path, 'w') as f:
+            f.write(master_playlist_content)
+
+        video.processing_status = "completed"
+        video.save()
+        logger.info(f"Master-Playlist for {video.title} successfully created.")
+
+    except Exception as e:
+        video.processing_status = "failed"
+        video.save()
+        logger.error(f"Error while processing the video: {e}")
+
+
+def get_resolution_width(height):
+    """Calculate width based on 16:9 aspect ratio"""
+    return int(height * 16 / 9)
