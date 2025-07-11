@@ -36,7 +36,7 @@ def video_post_delete(sender, instance, **kwargs):
     if instance.video_file:
         try:
             default_storage.delete(instance.video_file.name)
-            logger.info(f"Video-file for {instance.id} deleted")
+            logger.info(f"Video-file for {instance.title} deleted")
         except Exception as e:
             logger.error(f"Error when deleting the video file for {instance.id}: {str(e)}")
 
@@ -45,6 +45,6 @@ def video_post_delete(sender, instance, **kwargs):
             thumbnail_path = instance.thumbnail_url.split("/")[-2:]
             thumbnail_path = "/".join(thumbnail_path)
             default_storage.delete(thumbnail_path)
-            logger.info(f"Thumbnail for {instance.id} deleted")
+            logger.info(f"Thumbnail for {instance.title} deleted")
         except Exception as e:
             logger.error(f"Error when deleting the thumbnail for{instance.id}: {str(e)}")
