@@ -42,6 +42,8 @@ def video_post_save(sender, instance, created, **kwargs):
     elif not created and instance.video_file:
         pass
 
+    # TODO: optimieren momentan geht er jede auflösung seperat durch , evtl hier keine for schleife? --> mit hinsicht auf core leistung hier evtl größere hls stücke in task angeben? 15 min video sind momentan ~ 88 stücke je auflösung
+
 
 @receiver(post_delete, sender=Video)
 def video_post_delete(sender, instance, **kwargs):

@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Big Buck Bunny",
+    "file": "big_buck_bunny.mp4",
+    "genre": "Animation",
+    "description": "Ein großer, freundlicher Hase wird von drei frechen Nagetieren gemobbt und erlebt, wie seine geliebten Schmetterlinge getötet werden. Er fasst Mut, schmiedet klug ausgeklügelte Fallen und rächt sich – dabei triumphiert er schließlich über seine Peiniger."
+  },
+  {
+    "title": "Sintel",
+    "file": "sintel.mp4",
+    "genre": "Animation",
+    "description": "Sintel, eine junge Frau auf der Suche nach ihrem einst geretteten Drachenfreund Scales, kämpft sich durch gefährliche Landschaften, begegnet einem Schamanen und muss realisieren, dass sie den falschen Drachen getötet hat – eine tragische Reise voller Emotionen."
+  },
+  {
+    "title": "Tears of Steel",
+    "file": "tears_of_steel.mp4",
+    "genre": "Sci‑Fi",
+    "description": "In einer futuristischen Version von Amsterdam verbünden sich Menschen und Cyborgs, um einen geheimnisvollen Feind zu bekämpfen. Dabei vermischen sich Action, Emotion und technische Effekte zu einem berührenden Science‑Fiction‑Kurzfilm."
+  },
+  {
+    "title": "Spring",
+    "file": "spring.mp4",
+    "genre": "Natur",
+    "description": "Ein expressionistischer Kurzfilm, der Natur und Kunst kombiniert – begleitet von Musik und englischem Ton, beschreibt er die Wiedergeburt der Jahreszeiten in emotionaler Bildsprache."
+  },
+  {
+    "title": "Elephants Dream",
+    "file": "elephants_dream.mp4",
+    "genre": "Animation",
+    "description": "Zwei Charaktere reisen durch eine surreale, mechanische Welt voller Rätsel und Metaphern. Der Kurzfilm ist eher künstlerisch‑philosophisch und regt zum Nachdenken über Technologie und Beziehung an."
+  },
+  {
+    "title": "Cosmos Laundromat – First Cycle",
+    "file": "cosmos_laundromat.mp4",
+    "genre": "Fantasy",
+    "description": "Ein depressiver Schafverkäufer bekommt magische Fähigkeiten und stößt in eine absurde, fantastische Welt vor – ein fantasievolles Experiment über Identität und Schicksal."
+  }
+]
