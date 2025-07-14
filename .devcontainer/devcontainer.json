@@ -14,7 +14,8 @@
         "batisteo.vscode-django",
         "ms-azuretools.vscode-docker",
         "ms-python.black-formatter",
-        "ms-python.flake8"
+        "ms-python.flake8",
+        "gruntfuggly.todo-tree"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
