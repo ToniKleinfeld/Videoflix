@@ -82,8 +82,7 @@ def process_video_task(video_id):
         video.save()
 
         resolutions = {
-            "120p": {"height": 120, "bitrate": "200k"},
-            "360p": {"height": 360, "bitrate": "800k"},
+            "420p": {"height": 420, "bitrate": "1200k"},
             "720p": {"height": 720, "bitrate": "2500k"},
             "1080p": {"height": 1080, "bitrate": "5000k"},
         }
@@ -115,7 +114,7 @@ def process_video_task(video_id):
                     vcodec="libx264",
                     acodec="aac",
                     vf=f'scale=-2:{config["height"]}',
-                    hls_time=10,
+                    hls_time=15,
                     hls_playlist_type="vod",
                     hls_segment_filename=segment_pattern,
                     f="hls",
