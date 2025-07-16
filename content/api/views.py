@@ -4,12 +4,15 @@ from django.http import HttpResponse, Http404, FileResponse
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_control
+from django.db.models import Q
 
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from content.models import Video, VideoQuality
+from content.api.serializers import VideoListSerializer
 
 
 @api_view(["GET"])
@@ -101,3 +104,12 @@ def hls_segment(request, movie_id, resolution, segment_name):
 
     except IOError:
         raise Http404("Error reading segment")
+
+
+class VideoListView(generics.ListAPIView):
+    """
+    Returns list of all videos with basic information
+    """
+
+    serializer_class = VideoListSerializer
+    # permission_classes = [permissions.IsAuthenticated]
