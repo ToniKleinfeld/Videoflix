@@ -38,6 +38,7 @@ else:
     print(f"Superuser '{username}' already exists.")
 EOF
 
+chmod +x update_project.sh
 python manage.py rqworker default &
 
 exec gunicorn core.wsgi:application \

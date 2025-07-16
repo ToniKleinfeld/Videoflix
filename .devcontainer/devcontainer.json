@@ -15,7 +15,8 @@
         "ms-azuretools.vscode-docker",
         "ms-python.black-formatter",
         "ms-python.flake8",
-        "gruntfuggly.todo-tree"
+        "gruntfuggly.todo-tree",
+        "postman.postman-for-vscode"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
