@@ -1,11 +1,8 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from . import views
+from django.urls import path
+from .views import VideoListView
 
-router = DefaultRouter()
-# router.register(r"videos", views.VideoViewSet)
+app_name = "content-api"
 
 urlpatterns = [
-    path("<int:movie_id>/<str:resolution>/index.m3u8", views.hls_playlist, name="hls_playlist"),
-    path("<int:movie_id>/<str:resolution>/<str:segment_name>/", views.hls_segment, name="hls_segment"),
+    path("", VideoListView.as_view(), name="video-list"),
 ]
