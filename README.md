@@ -1,4 +1,5 @@
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=gradient&text=Backend Videoflix&section=header&reversal=false&textBg=false&fontSize=70&fontAlign=50&animation=fadeIn&fontAlignY=38&descSize=0"></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=gradient&text=Backend%20Videoflix&section=header&reversal=false&textBg=false&fontSize=70&fontAlign=50&animation=fadeIn&fontAlignY=38&descSize=0"></p>
+
 
 <p>
   <img alt="Version" src="https://img.shields.io/badge/Framework-Django-lightgreen?logo=django" />
