@@ -11,13 +11,13 @@ class VideoAdminAdvanced(admin.ModelAdmin):
         "title",
         "id",
         "category",
-        "create_at",
+        "created_at",
         "file_size",
         "thumbnail_status",
     ]
-    list_filter = ["category", "create_at"]
+    list_filter = ["category", "created_at"]
     search_fields = ["title", "description"]
-    ordering = ["-create_at"]
+    ordering = ["-created_at"]
     readonly_fields = ["video_preview", "thumbnail_preview", "file_info", "processing_info"]
 
     fieldsets = (
@@ -27,7 +27,7 @@ class VideoAdminAdvanced(admin.ModelAdmin):
             {"fields": ("video_file", "video_preview", "thumbnail_url", "thumbnail_preview"), "classes": ("wide",)},
         ),
         ("Processing", {"fields": ("processing_info",), "classes": ("collapse",)}),
-        ("Metadata", {"fields": ("create_at", "file_info"), "classes": ("collapse",)}),
+        ("Metadata", {"fields": ("created_at", "file_info"), "classes": ("collapse",)}),
     )
 
     def video_preview(self, obj):
