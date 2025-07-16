@@ -105,7 +105,7 @@ def process_video_task(video_id):
                 os.makedirs(resolution_dir, exist_ok=True)
 
                 playlist_path = os.path.join(resolution_dir, "index.m3u8")
-                segment_pattern = os.path.join(resolution_dir, "segment_%03d.ts")
+                segment_pattern = os.path.join(resolution_dir, "%03d.ts")
 
                 stream = ffmpeg.input(input_path)
                 stream = ffmpeg.output(
