@@ -38,8 +38,11 @@ else:
     print(f"Superuser '{username}' already exists.")
 EOF
 
+chmod +x update_project.sh
 python manage.py rqworker default &
-# python manage.py runserver 0.0.0.0:8000
-# TODO: Vor abgabe noch löschen die zeile drüber löschen!
 
-exec gunicorn core.wsgi:application --bind 0.0.0.0:8000
+exec gunicorn core.wsgi:application \
+  --bind 0.0.0.0:8000 \
+  --access-logfile - \
+  --error-logfile - \
+  --log-level info

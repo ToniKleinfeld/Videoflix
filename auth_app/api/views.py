@@ -90,34 +90,3 @@ class CookieTokenRefreshView(TokenRefreshView):
         )
 
         return response
-
-
-# class CookieTokenObtainPairView(TokenObtainPairView):
-#     """
-#     Get HTTPOnly Cookie with Username login
-#     """
-
-#     def post(self, request, *args, **kwargs):
-
-#         response = super().post(request, *args, **kwargs)
-#         refresh = response.data.get("refresh")
-#         access = response.data.get("access")
-
-#         response.set_cookie(
-#             key="access_token",
-#             value=access,
-#             httponly=True,
-#             secure=True,
-#             samesite="lax",
-#         )
-
-#         response.set_cookie(
-#             key="refresh_token",
-#             value=refresh,
-#             httponly=True,
-#             secure=True,
-#             samesite="lax",
-#         )
-
-#         response.data = {"message": "Login successful"}
-#         return response
