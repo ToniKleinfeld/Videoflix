@@ -11,9 +11,11 @@ RUN apk update && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     apk del .build-deps && \ 
-    apk add --no-cache git && \
-    chmod +x backend.entrypoint.sh 
+    apk add --no-cache git
+
+COPY .devcontainer/backend.entrypoint.dev.sh /usr/local/bin/entrypoint.sh
+RUN chmod a+x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8000
 
-ENTRYPOINT [ "./backend.entrypoint.sh" ]
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]

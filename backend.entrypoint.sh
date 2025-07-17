@@ -39,7 +39,5 @@ else:
 EOF
 
 python manage.py rqworker default &
-# python manage.py runserver 0.0.0.0:8000
-# TODO: Vor abgabe noch löschen die zeile drüber löschen!
 
 exec gunicorn core.wsgi:application --bind 0.0.0.0:8000

@@ -7,7 +7,6 @@ services:
     image: videoflix-dev-web
     env_file: .env
     container_name: videoflix_dev_backend
-    command: /bin/sh /app/backend.entrypoint.dev.sh
 
     volumes:
       - .:/app
