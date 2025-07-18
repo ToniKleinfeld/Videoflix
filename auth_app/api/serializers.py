@@ -1,7 +1,10 @@
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -42,7 +45,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account = User(username=username, email=email)
         account.set_password(pw)
         account.save()
-        return account
+
+        uid = urlsafe_base64_encode(force_bytes(account.pk))
+        token = default_token_generator.make_token(account)
+
+        from auth_app.tasks import send_activation_email
+
+        send_activation_email.delay(account.pk, uid, token)
+        return account, token
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
