@@ -1,9 +1,16 @@
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth import get_user_model
+
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegistrationSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from auth_app.api.serializers import RegistrationSerializer, CustomTokenObtainPairSerializer
+
+User = get_user_model()
 
 
 class RegistrationView(APIView):
@@ -18,12 +25,9 @@ class RegistrationView(APIView):
 
         data = {}
         if serializer.is_valid():
-            saved_account = serializer.save()
-            data = {
-                "email": saved_account.email,
-                "user_id": saved_account.pk,
-            }
-            return Response(data)
+            saved_account, token = serializer.save()
+            data = {"user": {"id": saved_account.pk, "email": saved_account.email}, "token": token}
+            return Response(data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -89,3 +93,21 @@ class CookieTokenRefreshView(TokenRefreshView):
         )
 
         return response
+
+
+class ActivateUserView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response({"message": "Account activated successfully"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Invalid activation link"}, status=status.HTTP_400_BAD_REQUEST)
