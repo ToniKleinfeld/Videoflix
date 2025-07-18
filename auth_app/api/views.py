@@ -20,7 +20,6 @@ class RegistrationView(APIView):
         if serializer.is_valid():
             saved_account = serializer.save()
             data = {
-                "username": saved_account.username,
                 "email": saved_account.email,
                 "user_id": saved_account.pk,
             }

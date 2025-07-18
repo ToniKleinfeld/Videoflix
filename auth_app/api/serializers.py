@@ -8,6 +8,7 @@ User = get_user_model()
 
 class RegistrationSerializer(serializers.ModelSerializer):
     repeated_password = serializers.CharField(write_only=True)
+    username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
@@ -25,10 +26,20 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already exists")
         return value
 
+    def generate_username(self, email):
+        local_part, domain_part = email.split("@", 1)
+        domain_clean = domain_part[::-1].replace(".", "_", 1)[::-1]
+
+        username = f"{local_part}{domain_clean}"
+
+        return username
+
     def save(self):
         pw = self.validated_data["password"]
+        email = self.validated_data["email"]
+        username = self.generate_username(email)
 
-        account = User(username=self.validated_data["username"], email=self.validated_data["email"])
+        account = User(username=username, email=email)
         account.set_password(pw)
         account.save()
         return account
