@@ -108,6 +108,6 @@ class ActivateUserView(APIView):
         if user is not None and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            return Response({"message": "Account activated successfully"}, status=status.HTTP_200_OK)
+            return Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid activation link"}, status=status.HTTP_400_BAD_REQUEST)
