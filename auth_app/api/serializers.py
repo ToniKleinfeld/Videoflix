@@ -81,6 +81,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if not user.check_password(password):
             raise serializers.ValidationError("No valid email or password.")
 
-        data = super().validate({"username": user.name, "password": password})
+        data = super().validate({"username": user.username, "password": password})
 
         return data
