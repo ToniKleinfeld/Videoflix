@@ -11,6 +11,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from auth_app.api.serializers import RegistrationSerializer, CustomTokenObtainPairSerializer
 
+from core.settings import env
+
 User = get_user_model()
 
 
@@ -69,6 +71,10 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
+    """
+    View to refresh the access token using the refresh token stored in cookies.
+    """
+
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
 
@@ -97,6 +103,10 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 
 class ActivateUserView(APIView):
+    """
+    View to activate user account via email link.
+    """
+
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
@@ -144,3 +154,5 @@ class CookieTokenLogoutView(APIView):
         response.delete_cookie("refresh_token", samesite="lax", secure=True)
 
         return response
+
+
