@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from auth_app.api.serializers import RegistrationSerializer, CustomTokenObtainPairSerializer
 
@@ -83,7 +84,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
         access_token = serializer.validated_data.get("access")
 
-        response = Response({"message": "Access Token refreshed"})
+        response = Response({"detail": "Token refreshed", " access": access_token})
         response.set_cookie(
             key="access_token",
             value=access_token,
@@ -111,3 +112,35 @@ class ActivateUserView(APIView):
             return Response({"message": "Account successfully activated."}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid activation link"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CookieTokenLogoutView(APIView):
+    """
+    Logout view to delete HttpOnly access & refresh token cookies
+    """
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+        access_token = request.COOKIES.get("access_token")
+
+        if not refresh_token or not access_token:
+            return Response(
+                {"detail": "No token cookies found."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except TokenError:
+            pass
+
+        response = Response(
+            {"detail": "Log-Out successfully! All Tokens will be deleted. Refresh token is now invalid."},
+            status=status.HTTP_200_OK,
+        )
+
+        response.delete_cookie("access_token", samesite="lax", secure=True)
+        response.delete_cookie("refresh_token", samesite="lax", secure=True)
+
+        return response
