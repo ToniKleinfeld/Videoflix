@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 
+from core.utils.tasks import enqueue_after_commit
+
 User = get_user_model()
 
 
@@ -51,7 +53,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         from auth_app.tasks import send_activation_email
 
-        send_activation_email.delay(account.pk, uid, token)
+        enqueue_after_commit(send_activation_email, account.pk, uid, token)
         return account, token
 
 
@@ -84,3 +86,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate({"username": user.username, "password": password})
 
         return data
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    """Serializer for password reset requests."""
+
+    email = serializers.EmailField()
