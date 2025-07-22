@@ -5,12 +5,12 @@ from django.core.files.storage import default_storage
 from django.db import transaction
 from django.conf import settings
 
-from .models import Video
+from content.models import Video
 from content.tasks import generate_video_thumbnail, process_video_task
 from urllib.parse import unquote
 from datetime import timedelta
+from core.utils.tasks import enqueue_after_commit
 
-import django_rq
 import shutil
 import logging
 import ffmpeg
@@ -34,10 +34,10 @@ def video_post_save(sender, instance, created, **kwargs):
             logger.error(f"Error when extracting the duration: {e}")
 
         logger.info(f"New Video {instance.title} uploaded, start thumbnail generation")
-        transaction.on_commit(lambda: django_rq.enqueue(generate_video_thumbnail, instance.id))
+        enqueue_after_commit(generate_video_thumbnail, instance.id)
 
         logger.info(f"New Video {instance.title} uploaded, start Generating different resolutions")
-        transaction.on_commit(lambda: django_rq.enqueue(process_video_task, instance.id))
+        enqueue_after_commit(process_video_task, instance.id)
 
     elif not created and instance.video_file:
         pass

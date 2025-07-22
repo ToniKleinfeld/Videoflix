@@ -1,20 +1,27 @@
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers
+
+from core.utils.tasks import enqueue_after_commit
 
 User = get_user_model()
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    repeated_password = serializers.CharField(write_only=True)
+    confirmed_password = serializers.CharField(write_only=True)
+    username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        fields = ["username", "email", "password", "repeated_password"]
+        fields = ["username", "email", "password", "confirmed_password"]
         extra_kwargs = {"password": {"write_only": True}}
 
-    def validate_repeated_password(self, value):
+    def validate_confirmed_password(self, value):
         password = self.initial_data.get("password")
         if password and value and password != value:
             raise serializers.ValidationError("Passwords do not match")
@@ -25,13 +32,30 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already exists")
         return value
 
+    def generate_username(self, email):
+        local_part, domain_part = email.split("@", 1)
+        domain_clean = domain_part[::-1].replace(".", "_", 1)[::-1]
+
+        username = f"{local_part}{domain_clean}"
+
+        return username
+
     def save(self):
         pw = self.validated_data["password"]
+        email = self.validated_data["email"]
+        username = self.generate_username(email)
 
-        account = User(username=self.validated_data["username"], email=self.validated_data["email"])
+        account = User(username=username, email=email, is_active=False)
         account.set_password(pw)
         account.save()
-        return account
+
+        uid = urlsafe_base64_encode(force_bytes(account.pk))
+        token = default_token_generator.make_token(account)
+
+        from auth_app.tasks import send_activation_email
+
+        enqueue_after_commit(send_activation_email, account.pk, uid, token)
+        return account, token
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -60,6 +84,23 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if not user.check_password(password):
             raise serializers.ValidationError("No valid email or password.")
 
-        data = super().validate({"username": user.name, "password": password})
+        data = super().validate({"username": user.username, "password": password})
 
+        return data
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    """Serializer for password reset requests."""
+
+    email = serializers.EmailField()
+
+
+class PasswordConfirmSerializer(serializers.Serializer):
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if data["new_password"] != data["confirm_password"]:
+            raise serializers.ValidationError("Passwords do not match.")
+        validate_password(data["new_password"])
         return data
