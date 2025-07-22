@@ -2,6 +2,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
@@ -92,3 +93,14 @@ class PasswordResetSerializer(serializers.Serializer):
     """Serializer for password reset requests."""
 
     email = serializers.EmailField()
+
+
+class PasswordConfirmSerializer(serializers.Serializer):
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if data["new_password"] != data["confirm_password"]:
+            raise serializers.ValidationError("Passwords do not match.")
+        validate_password(data["new_password"])
+        return data
