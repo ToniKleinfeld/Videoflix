@@ -37,7 +37,7 @@ class VideoQuality(models.Model):
     resolution = models.CharField(
         max_length=10,
         choices=[
-            ("420p", "420p"),
+            ("480p", "480p"),
             ("720p", "720p"),
             ("1080p", "1080p"),
         ],

@@ -36,7 +36,7 @@ def generate_video_thumbnail(video_id):
 
         try:
             (
-                ffmpeg.input(temp_video_path, ss=5)
+                ffmpeg.input(temp_video_path, ss=20)
                 .filter("scale", 640, -1)
                 .output(temp_thumb_path, vframes=1, **{"q:v": 2})
                 .overwrite_output()
@@ -82,7 +82,7 @@ def process_video_task(video_id):
         video.save()
 
         resolutions = {
-            "420p": {"height": 420, "bitrate": "1200k"},
+            "480p": {"height": 480, "bitrate": "1600k"},
             "720p": {"height": 720, "bitrate": "2500k"},
             "1080p": {"height": 1080, "bitrate": "5000k"},
         }
