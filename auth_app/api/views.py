@@ -12,7 +12,12 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-from auth_app.api.serializers import RegistrationSerializer, CustomTokenObtainPairSerializer, PasswordResetSerializer
+from auth_app.api.serializers import (
+    RegistrationSerializer,
+    CustomTokenObtainPairSerializer,
+    PasswordResetSerializer,
+    PasswordConfirmSerializer,
+)
 from auth_app.tasks import send_password_reset_email
 
 from core.settings import env
@@ -185,3 +190,23 @@ class PasswordResetView(APIView):
         enqueue_after_commit(send_password_reset_email, user.email, reset_url)
 
         return Response({"detail": "An email has been sent to reset your password."}, status=status.HTTP_200_OK)
+
+
+class PasswordConfirmView(APIView):
+    def post(self, request, uidb64, token):
+        serializer = PasswordConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            return Response({"detail": "Invalid link."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not default_token_generator.check_token(user, token):
+            return Response({"detail": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+
+        return Response({"detail": "Your Password has been successfully reset."}, status=status.HTTP_200_OK)
