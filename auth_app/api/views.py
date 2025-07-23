@@ -161,8 +161,8 @@ class CookieTokenLogoutView(APIView):
             status=status.HTTP_200_OK,
         )
 
-        response.delete_cookie("access_token", samesite="lax", secure=True)
-        response.delete_cookie("refresh_token", samesite="lax", secure=True)
+        response.delete_cookie("access_token", samesite="lax")
+        response.delete_cookie("refresh_token", samesite="lax")
 
         return response
 

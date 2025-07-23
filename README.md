@@ -14,8 +14,8 @@ Docker Desktop installed and running
 ## Installation
 
 > [!NOTE]
-> You can test this project without .env , there are plenty default settings for fast testing <br>
-> If you want to use your own settings use:
+> You can test this project not without .env , there are plenty default settings for fast testing ,but the file is needed <br>
+> Use:
 
 ```sh
 cp .env.example .env
@@ -48,7 +48,7 @@ then type <br>
 `>Dev Containers: Reopen in Container`
 
 if something went wrong use: <br>
-``>Dev Containers: Rebuild Container Without Cache``
+`>Dev Containers: Rebuild Container Without Cache`
 
 ## More Infos
 
