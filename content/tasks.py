@@ -7,6 +7,7 @@ from django.conf import settings
 import ffmpeg
 import tempfile
 import logging
+import math
 
 from core.settings import SITE_URL
 from content.models import Video, VideoQuality
@@ -36,9 +37,17 @@ def generate_video_thumbnail(video_id):
         with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_thumb:
             temp_thumb_path = temp_thumb.name
 
+        metadata = ffmpeg.probe(temp_video_path)
+        duration = float(metadata["format"]["duration"])
+
+        if duration >= 20:
+            timestamp = 20
+        else:
+            timestamp = 1
+
         try:
             (
-                ffmpeg.input(temp_video_path, ss=20)
+                ffmpeg.input(temp_video_path, ss=timestamp)
                 .filter("scale", 640, -1)
                 .output(temp_thumb_path, vframes=1, **{"q:v": 2})
                 .overwrite_output()
