@@ -14,7 +14,7 @@ Docker Desktop installed and running
 ## Installation
 
 > [!NOTE]
-> You can test this project not without .env , there are plenty default settings for fast testing ,but the file is needed <br>
+> You can't test this project without a .env file , there are plenty default settings for fast testing ,but the file is needed <br>
 > Use:
 
 ```sh
