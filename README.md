@@ -1,6 +1,5 @@
 <p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=gradient&text=Backend%20Videoflix&section=header&reversal=false&textBg=false&fontSize=70&fontAlign=50&animation=fadeIn&fontAlignY=38&descSize=0"></p>
 
-
 <p>
   <img alt="Version" src="https://img.shields.io/badge/Framework-Django-lightgreen?logo=django" />
 </p>
@@ -9,37 +8,27 @@
 
 ## Dependencies
 
-Used : `Python version 3.13.2`
+Used : `Python version 3.13.2` <br> <br>
+Docker Desktop installed and running
 
 ## Installation
 
-First install all needed packages.
+> [!NOTE]
+> You can test this project without .env , there are plenty default settings for fast testing <br>
+> If you want to use your own settings use:
+
+```sh
+cp .env.example .env
+```
+
+#
+
+First create all needed docker containers.
 
 on Windows:
 
 ```sh
-python -m venv env
-
-env/Scripts/activate
-
-pip install -r requirements.txt
-```
-
-on Mac or Linux:
-
-```sh
-python3 -m venv env
-
-source env/bin/activate
-
-pip install -r requirements.txt
-```
-
-> [!IMPORTANT]
-> create your .env file and fill your data
-
-```sh
-cp .env.example .env
+docker-compose up --build
 ```
 
 ## How to use
@@ -47,14 +36,19 @@ cp .env.example .env
 How to start local server:
 
 ```sh
-env/Scripts/activate
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
+docker-compose up
 ```
 
-> [!NOTE]
-> If python not work, try python3
+## Alternatively using Dev Container
+
+Alternatively using Microsoft , Container Tools plugin on VSCode to programme directly in the container
+
+`Press F1`
+then type <br>
+`>Dev Containers: Reopen in Container`
+
+if something went wrong use: <br>
+``>Dev Containers: Rebuild Container Without Cache``
 
 ## More Infos
 
