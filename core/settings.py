@@ -39,6 +39,8 @@ else:
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default="http://localhost:4200")
 
+SITE_URL = env("SITE_URL", default="http://localhost:8000")
+
 # Application definition
 
 INSTALLED_APPS = [
