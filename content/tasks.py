@@ -8,7 +8,9 @@ import ffmpeg
 import tempfile
 import logging
 
-from .models import Video, VideoQuality
+from core.settings import SITE_URL
+from content.models import Video, VideoQuality
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,11 +45,12 @@ def generate_video_thumbnail(video_id):
                 .run(quiet=True)
             )
 
-            thumbnail_filename = f"thumbnails/{video.title + str(video.id)}.jpg"
+            thumbnail_filename = f"thumbnails/{str(video.id)}/{video.title}.jpg"
 
             with open(temp_thumb_path, "rb") as thumb_file:
                 saved_path = default_storage.save(thumbnail_filename, ContentFile(thumb_file.read()))
-                thumbnail_url = default_storage.url(saved_path)
+                relative_url = default_storage.url(saved_path)
+                thumbnail_url = f"{SITE_URL}{relative_url}"
 
                 video.thumbnail_url = thumbnail_url
                 video.save(update_fields=["thumbnail_url"])
