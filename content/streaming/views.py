@@ -8,12 +8,13 @@ from django.views.decorators.cache import cache_control
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 from content.models import Video, VideoQuality
 
 
 @api_view(["GET"])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 @cache_control(max_age=300)
 def hls_playlist(request, movie_id, resolution):
     """
@@ -61,7 +62,7 @@ def hls_playlist(request, movie_id, resolution):
 
 
 @api_view(["GET"])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 @cache_control(max_age=3600)
 def hls_segment(request, movie_id, resolution, segment_name):
     """
