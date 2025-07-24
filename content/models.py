@@ -3,6 +3,8 @@ from datetime import date
 
 
 class Video(models.Model):
+    """Model representing a video file with metadata."""
+
     created_at = models.DateField(default=date.today)
     title = models.CharField(max_length=80)
     description = models.TextField(max_length=400)

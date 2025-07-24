@@ -13,6 +13,8 @@ User = get_user_model()
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """Serializer for user registration."""
+
     confirmed_password = serializers.CharField(write_only=True)
     username = serializers.CharField(read_only=True)
 

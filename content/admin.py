@@ -7,6 +7,8 @@ import django_rq
 
 @admin.register(Video)
 class VideoAdminAdvanced(admin.ModelAdmin):
+    """Admin interface for managing Video objects with advanced features."""
+
     list_display = [
         "title",
         "id",
@@ -98,6 +100,8 @@ class VideoAdminAdvanced(admin.ModelAdmin):
 
 
 class VideoQualityAdmin(admin.ModelAdmin):
+    """Admin interface for managing VideoQuality objects."""
+
     list_display = ("video_title", "resolution", "bitrate", "processing_status")
     list_filter = ("processing_status", "resolution", "video__title")
     search_fields = ("video__title",)

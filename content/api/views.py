@@ -12,4 +12,4 @@ class VideoListView(generics.ListAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoListSerializer
 
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
