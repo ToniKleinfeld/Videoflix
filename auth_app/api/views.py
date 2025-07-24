@@ -193,6 +193,10 @@ class PasswordResetView(APIView):
 
 
 class PasswordConfirmView(APIView):
+    """
+    View to handle password confirm post.
+    """
+
     def post(self, request, uidb64, token):
         serializer = PasswordConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

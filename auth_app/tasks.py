@@ -12,9 +12,12 @@ logger = logging.getLogger(__name__)
 
 @job("default", timeout=300)
 def send_activation_email(user_id, uid, token):
+    """
+    Send an activation email to the user after registration.
+    """
     try:
         user = User.objects.get(pk=user_id)
-        activation_link = f"{env('FRONTEND_URL', default='http://localhost:8000')}/api/activate/{uid}/{token}/"
+        activation_link = f"{env('SITE_URL', default='http://localhost:8000')}/api/activate/{uid}/{token}/"
 
         subject = "Activate your account"
         message = (
@@ -39,6 +42,9 @@ def send_activation_email(user_id, uid, token):
 
 @job("default", timeout=300)
 def send_password_reset_email(email, reset_url):
+    """
+    Send a password reset email to the user.
+    """
     try:
         subject = "Password Reset Request"
         message = (
