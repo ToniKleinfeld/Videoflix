@@ -211,7 +211,7 @@ LOGGING = {
 }
 
 # SMTP Konfiguration
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
