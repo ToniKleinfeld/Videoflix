@@ -9,8 +9,10 @@ import tempfile
 import logging
 import math
 
+
 from core.settings import SITE_URL
 from content.models import Video, VideoQuality
+from content.utils import video_processing
 
 
 logger = logging.getLogger(__name__)
@@ -28,43 +30,12 @@ def generate_video_thumbnail(video_id):
         if not video.video_file:
             return False
 
-        with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_video:
-            video.video_file.open("rb")
-            temp_video.write(video.video_file.read())
-            video.video_file.close()
-            temp_video_path = temp_video.name
-
-        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_thumb:
-            temp_thumb_path = temp_thumb.name
-
-        metadata = ffmpeg.probe(temp_video_path)
-        duration = float(metadata["format"]["duration"])
-
-        if duration >= 20:
-            timestamp = 20
-        else:
-            timestamp = 1
+        temp_video_path = video_processing.create_temporary_file_mp4(video)
+        temp_thumb_path = video_processing.create_temporary_file_thumbnail()
+        timestamp = video_processing.set_timestamp(temp_video_path)
 
         try:
-            (
-                ffmpeg.input(temp_video_path, ss=timestamp)
-                .filter("scale", 640, -1)
-                .output(temp_thumb_path, vframes=1, **{"q:v": 2})
-                .overwrite_output()
-                .run(quiet=True)
-            )
-
-            thumbnail_filename = f"thumbnails/{str(video.id)}/{video.title}.jpg"
-
-            with open(temp_thumb_path, "rb") as thumb_file:
-                saved_path = default_storage.save(thumbnail_filename, ContentFile(thumb_file.read()))
-                relative_url = default_storage.url(saved_path)
-                thumbnail_url = f"{SITE_URL}{relative_url}"
-
-                video.thumbnail_url = thumbnail_url
-                video.save(update_fields=["thumbnail_url"])
-
-                logger.info(f"Thumbnail for video {video.title} successfully generated: {thumbnail_url}")
+            video_processing.generate_thumbnail_try(video, temp_video_path, temp_thumb_path, timestamp)
 
         except Exception as e:
             logger.error(f"Error: {str(e)}")

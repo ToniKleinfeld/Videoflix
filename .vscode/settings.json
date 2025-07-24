@@ -7,5 +7,6 @@
         "--config",
         "flake8.ini"
     ],
-    "editor.formatOnSave": true // Format on save
+    "editor.formatOnSave": true,
+    "postman.settings.dotenv-detection-notification-visibility": false // Format on save
 }
