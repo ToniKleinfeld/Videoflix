@@ -59,16 +59,11 @@ def process_video_task(video_id):
     """
     Generating different resolutions in hls format
     """
+    video = Video.objects.get(id=video_id)
     try:
-        video = Video.objects.get(id=video_id)
-        video.processing_status = "processing"
-        video.save()
+        video_processing.set_prossesing_status(video, "processing")
 
-        resolutions = {
-            "480p": {"height": 480, "bitrate": "1600k"},
-            "720p": {"height": 720, "bitrate": "2500k"},
-            "1080p": {"height": 1080, "bitrate": "5000k"},
-        }
+        resolutions = video_processing.get_resolutions()
 
         input_path = video.video_file.path
         base_output_dir = os.path.join(settings.MEDIA_ROOT, "hls", str(video.id))
@@ -80,62 +75,29 @@ def process_video_task(video_id):
             quality, created = VideoQuality.objects.get_or_create(
                 video=video, resolution=resolution, defaults={"bitrate": int(config["bitrate"].replace("k", ""))}
             )
-            quality.processing_status = "processing"
-            quality.save()
+
+            video_processing.set_prossesing_status(quality, "processing")
 
             try:
-                resolution_dir = os.path.join(base_output_dir, resolution)
-                os.makedirs(resolution_dir, exist_ok=True)
 
-                playlist_path = os.path.join(resolution_dir, "index.m3u8")
-                segment_pattern = os.path.join(resolution_dir, "%03d.ts")
-
-                stream = ffmpeg.input(input_path)
-                stream = ffmpeg.output(
-                    stream,
-                    playlist_path,
-                    vcodec="libx264",
-                    acodec="aac",
-                    vf=f'scale=-2:{config["height"]}',
-                    hls_time=15,
-                    hls_playlist_type="vod",
-                    hls_segment_filename=segment_pattern,
-                    f="hls",
-                    **{
-                        "b:v": config["bitrate"],
-                        "b:a": "128k",
-                    },
+                master_playlist_content = video_processing.try_generate_video_quality(
+                    video, resolution, config, base_output_dir, input_path, quality, master_playlist_content
                 )
 
-                ffmpeg.run(stream, overwrite_output=True, quiet=True)
-
-                quality.hls_playlist_path = f"hls/{video.id}/{resolution}/index.m3u8"
-                quality.processing_status = "completed"
-                quality.save()
-
-                bandwidth = int(config["bitrate"].replace("k", "")) * 1000
-                master_playlist_content += f"#EXT-X-STREAM-INF:BANDWIDTH={bandwidth},RESOLUTION={get_resolution_width(config['height'])}x{config['height']}\n"
-                master_playlist_content += f"/api/video/{video.id}/{resolution}/index.m3u8\n\n"
-
             except ffmpeg.Error as e:
-                quality.processing_status = "failed"
-                quality.save()
+
+                video_processing.set_prossesing_status(quality, "failed")
+
                 logger.error(f"Error at {resolution}: stderr:\n{e.stderr.decode()}")
 
         master_playlist_path = os.path.join(base_output_dir, "master.m3u8")
         with open(master_playlist_path, "w") as f:
             f.write(master_playlist_content)
 
-        video.processing_status = "completed"
-        video.save()
+        video_processing.set_prossesing_status(video, "completed")
         logger.info(f"Master-Playlist for {video.title} successfully created.")
 
     except Exception as e:
-        video.processing_status = "failed"
-        video.save()
+
+        video_processing.set_prossesing_status(video, "failed")
         logger.error(f"Error while processing the video: {e}")
-
-
-def get_resolution_width(height):
-    """Calculate width based on 16:9 aspect ratio"""
-    return int(height * 16 / 9)
