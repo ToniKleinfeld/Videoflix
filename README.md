@@ -2,6 +2,9 @@
 
 <p>
   <img alt="Version" src="https://img.shields.io/badge/Framework-Django-lightgreen?logo=django" />
+  <img src="https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Redis-%23DD0031.svg?logo=redis&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff" />
 </p>
 
 > A Django / DRF based backend for a Video platform
