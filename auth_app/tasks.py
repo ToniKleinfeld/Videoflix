@@ -17,7 +17,9 @@ def send_activation_email(user_id, uid, token):
     """
     try:
         user = User.objects.get(pk=user_id)
-        activation_link = f"{env('SITE_URL', default='http://localhost:8000')}/api/activate/{uid}/{token}/"
+        activation_link = (
+            f"{env('FRONTEND_URL', default='http://localhost:8000')}/pages/auth/activate.html?uid={uid}&token={token}"
+        )
 
         subject = "Activate your account"
         message = (
