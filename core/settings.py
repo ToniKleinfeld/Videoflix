@@ -19,10 +19,13 @@ import sys
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env(BASE_DIR / ".env")
+local_env_path = BASE_DIR / ".env"
 
-if env.bool("RELOAD_ENV", default=True):
-    environ.Env.read_env(BASE_DIR / ".env", override=True)
+if local_env_path.exists():
+    env.read_env(local_env_path)
+
+if env.bool("RELOAD_ENV", default=True) and local_env_path.exists():
+    environ.Env.read_env(local_env_path, override=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -36,7 +39,7 @@ if DEBUG:
 else:
     SECRET_KEY = env("SECRET_KEY")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default="http://localhost:4200")
 
 SITE_URL = env("SITE_URL", default="http://localhost:8000")
@@ -98,9 +101,9 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DB_NAME", default="videoflix_db"),
-        "USER": env("DB_USER", default="videoflix_user"),
-        "PASSWORD": env("DB_PASSWORD", default="supersecretpassword"),
+        "NAME": env("VIDEOFLIX_DB", default="videoflix_db"),
+        "USER": env("VIDEOFLIX_DB_USER", default="videoflix_user"),
+        "PASSWORD": env("VIDEOFLIX_DB_PASSWORD", default="supersecretpassword"),
         "HOST": env("DB_HOST", default="db"),
         "PORT": env("DB_PORT", default=5432),
     }
@@ -182,10 +185,7 @@ REST_FRAMEWORK = {
     },
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-]
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://127.0.0.1:5500", "http://localhost:5500"])
 
 CORS_ALLOW_CREDENTIALS = True
 
