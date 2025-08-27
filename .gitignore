@@ -140,3 +140,7 @@ GitHub.sublime-settings
 
 /static
 /logs
+
+
+Dockerfile.deploy
+entrypoint.deploy.sh
