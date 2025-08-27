@@ -144,3 +144,4 @@ GitHub.sublime-settings
 
 Dockerfile.deploy
 entrypoint.deploy.sh
+worker.deploy.sh
