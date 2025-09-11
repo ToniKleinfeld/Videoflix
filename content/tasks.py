@@ -54,7 +54,7 @@ def generate_video_thumbnail(video_id):
         return False
 
 
-@job("default", timeout=7200)
+@job("default", timeout=14400)
 def process_video_task(video_id):
     """
     Generating different resolutions in hls format
